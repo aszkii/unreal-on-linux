@@ -1,0 +1,27 @@
+
+services:
+  game:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: uol_image
+    network_mode: host
+    privileged: false
+    container_name: uol_container
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /usr/share/vulkan:/usr/share/vulkan:rw
+      - ./Linux:/home/runtime/game:rw
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ['/home/runtime/game/MyProject5.sh', '-Windowed', '-ResX=400', '-ResX=300', '-nosound']
+    # command: ['/home/runtime/game/MyProject5.sh', '-RenderOffScreen', '-nosound']
