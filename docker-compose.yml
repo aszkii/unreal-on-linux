@@ -1,13 +1,28 @@
 
 services:
+  web:
+    build:
+      context: ./web
+      dockerfile: SignallingWebServer/Dockerfile
+    image: uol_image/web
+    privileged: false
+    container_name: uol_container_web
+    environment:
+      - http_proxy=""
+      - https_proxy=""
+    network_mode: "host"
+    command: ["/usr/local/bin/node",
+              "/opt/SignallingWebServer/cirrus.js",
+              "--PublicIp", "localhost",
+              "--StreamerPort","8888"]
   game:
     build:
       context: .
       dockerfile: Dockerfile
-    image: uol_image
+    image: uol_image/game
     network_mode: host
     privileged: false
-    container_name: uol_container
+    container_name: uol_container_game
     environment:
       - DISPLAY=${DISPLAY}
       - NVIDIA_VISIBLE_DEVICES=all
@@ -16,6 +31,8 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /usr/share/vulkan:/usr/share/vulkan:rw
       - ./Linux:/home/runtime/game:rw
+    depends_on:
+      - web
     deploy:
       resources:
         reservations:
@@ -23,5 +40,9 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ['/home/runtime/game/MyProject5.sh', '-Windowed', '-ResX=400', '-ResX=300', '-nosound']
-    # command: ['/home/runtime/game/MyProject5.sh', '-RenderOffScreen', '-nosound']
+    command: ['/home/runtime/game/MyProject5.sh',
+              '-PixelStreamingIP=localhost', '-PixelStreamingPort=8888',
+              '-Windowed', '-ResX=400', '-ResX=300', '-nosound']
+    # command: ['/home/runtime/game/MyProject5.sh',
+    #           '-PixelStreamingIP=localhost', '-PixelStreamingPort=8888',
+    #           '-RenderOffScreen', '-nosound']
