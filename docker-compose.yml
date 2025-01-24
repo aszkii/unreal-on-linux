@@ -10,17 +10,26 @@ services:
     environment:
       - http_proxy=""
       - https_proxy=""
-    network_mode: "host"
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.100
+    ports:
+      - "80:80"
+      - "443:443"
     command: ["/usr/local/bin/node",
               "/opt/SignallingWebServer/cirrus.js",
-              "--PublicIp", "localhost",
+              "--PublicIp", "0.0.0.0",
               "--StreamerPort","8888"]
   game:
     build:
       context: .
       dockerfile: Dockerfile
     image: uol_image/game
-    network_mode: host
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.101
+    ports:
+      - "8888:8888"
     privileged: false
     container_name: uol_container_game
     environment:
@@ -28,8 +37,8 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - /usr/share/vulkan:/usr/share/vulkan:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /usr/share/vulkan:/usr/share/vulkan:ro
       - ./Linux:/home/runtime/game:rw
     depends_on:
       - web
@@ -41,8 +50,12 @@ services:
               count: 1
               capabilities: [gpu]
     command: ['/home/runtime/game/MyProject5.sh',
-              '-PixelStreamingIP=localhost', '-PixelStreamingPort=8888',
-              '-Windowed', '-ResX=400', '-ResX=300', '-nosound']
-    # command: ['/home/runtime/game/MyProject5.sh',
-    #           '-PixelStreamingIP=localhost', '-PixelStreamingPort=8888',
-    #           '-RenderOffScreen', '-nosound']
+              '-PixelStreamingIP=192.168.1.100', '-PixelStreamingPort=8888',
+              '-RenderOffScreen', '-nosound']
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
