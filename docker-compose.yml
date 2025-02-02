@@ -35,10 +35,11 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - /usr/share/vulkan/icd.d:/usr/share/vulkan/icd.d:ro
+      - /usr/share/vulkan/implicit_layer.d:/usr/share/vulkan/implicit_layer.d:ro
       - ./Linux:/home/runtime/game:rw
     depends_on:
       - web
@@ -51,7 +52,7 @@ services:
               capabilities: [gpu]
     command: ['/home/runtime/game/MyProject5.sh',
               '-PixelStreamingIP=192.168.1.100', '-PixelStreamingPort=8888',
-              '-RenderOffScreen']
+              '-RenderOffScreen', '-nosound', '-vulkan']
 
 networks:
   custom_network:
