@@ -1,35 +1,20 @@
 
 services:
   web:
-    build:
-      context: ./web
-      dockerfile: SignallingWebServer/Dockerfile
-    image: uol_image/web
+    image: node:lts
     privileged: false
     container_name: uol_container_web
-    environment:
-      - http_proxy=""
-      - https_proxy=""
-    networks:
-      custom_network:
-        ipv4_address: 192.168.1.100
-    ports:
-      - "80:80"
-      - "443:443"
-    command: ["/usr/local/bin/node",
-              "/opt/SignallingWebServer/cirrus.js",
-              "--PublicIp", "0.0.0.0",
-              "--StreamerPort","8888"]
+    network_mode: host
+    volumes:
+      - ./web/Frontend:/Frontend:rw
+      - ./web/SignallingWebServer:/SignallingWebServer:rw
+    command: ["/SignallingWebServer/platform_scripts/bash/Start_SignallingServer.sh"] # not run_local.sh
   game:
     build:
       context: .
       dockerfile: Dockerfile
     image: uol_image/game
-    networks:
-      custom_network:
-        ipv4_address: 192.168.1.101
-    ports:
-      - "8888:8888"
+    network_mode: host
     privileged: false
     container_name: uol_container_game
     environment:
@@ -37,22 +22,13 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - ./Linux:/home/runtime/game:rw
-    depends_on:
-      - web
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              count: all
               capabilities: [gpu]
     command: ['/home/runtime/game/SplattingDemo.sh',
-              '-PixelStreamingIP=192.168.1.100', '-PixelStreamingPort=8888',
-              '-RenderOffScreen', '-nosound', '-vulkan']
-
-networks:
-  custom_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.1.0/24
+              '-PixelStreamingIP=0.0.0.0', '-PixelStreamingPort=8888',
+              '-RenderOffScreen', '-nosound', '-vulkan', '-ResX=600', '-ResY=300']
