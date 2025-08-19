@@ -3,6 +3,7 @@ services:
   web:
     image: node:lts
     privileged: false
+    restart: always
     container_name: uol_container_web
     network_mode: host
     volumes:
@@ -16,6 +17,7 @@ services:
     image: uol_image/game
     network_mode: host
     privileged: false
+    restart: always
     container_name: uol_container_game
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -31,4 +33,4 @@ services:
               capabilities: [gpu]
     command: ['/home/runtime/game/SplattingDemo.sh',
               '-PixelStreamingIP=0.0.0.0', '-PixelStreamingPort=8888',
-              '-RenderOffScreen', '-nosound', '-vulkan', '-ResX=600', '-ResY=300']
+              '-RenderOffScreen', '-nosound', '-vulkan', '-ResX=480', '-ResY=320']
