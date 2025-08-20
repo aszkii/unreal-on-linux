@@ -41,9 +41,9 @@ services:
         "-vulkan",
         "-ResX=480",
         "-ResY=320",
-        "-PixelStreamingWebRTCStartBitrate=10000000",
-        "-PixelStreamingWebRTCMinBitrate=100000",
-        "-PixelStreamingWebRTCMaxBitrate=30000000",
+        "-PixelStreamingWebRTCStartBitrate=30000000",
+        "-PixelStreamingWebRTCMinBitrate=10000000", # for good quality you need 10Mbps at minimum
+        "-PixelStreamingWebRTCMaxBitrate=50000000",
         "-PixelStreamingWebRTCMaxFps=50",
         "-PixelStreamingWebRTCDisableReceiveAudio=true",
         "-PixelStreamingWebRTCDisableTransmitAudio=true",
