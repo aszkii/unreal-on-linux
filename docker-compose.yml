@@ -31,6 +31,21 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    command: ['/home/runtime/game/SplattingDemo.sh',
-              '-PixelStreamingIP=0.0.0.0', '-PixelStreamingPort=8888',
-              '-RenderOffScreen', '-nosound', '-vulkan', '-ResX=480', '-ResY=320']
+    command:
+      [
+        "/home/runtime/game/SplattingDemo.sh",
+        "-PixelStreamingIP=0.0.0.0",
+        "-PixelStreamingPort=8888",
+        "-RenderOffScreen",
+        "-nosound",
+        "-vulkan",
+        "-ResX=480",
+        "-ResY=320",
+        "-PixelStreamingWebRTCStartBitrate=3000000",
+        "-PixelStreamingWebRTCMinBitrate=100000",
+        "-PixelStreamingWebRTCMaxBitrate=5000000",
+        "-PixelStreamingWebRTCMaxFps=50",
+        "-PixelStreamingWebRTCDisableReceiveAudio=true",
+        "-PixelStreamingWebRTCDisableTransmitAudio=true",
+        "-PixelStreamingWebRTCDisableAudioSync=true"
+      ]
